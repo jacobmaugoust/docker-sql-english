@@ -1,5 +1,5 @@
-# Readme to run a MariaDB or MySQL container with a custom table
-## Files
+# Run a MariaDB or MySQL container with a custom table
+## Files needed
 You need to create the following files:
 - `.env`: to specify environment variables
 - `docker-compose.yml`: the configuration file for the container to be launched
@@ -83,3 +83,55 @@ In this code:
         - `'France'` then `'Allemagne'`for `Country` field
         - `'FR'` then `'DE'` for `CountryCode` field
         - `'fr'` then `'de'` for `LangCode` field
+## 'How-to' run the container
+### Container launch
+To launch the container using Docker, you need to open a terminal where all the previous files (`docker-compose.yml`, `.env`, `scripts` folder) are located.  
+Then, just type in the terminal
+```
+docker compose up -d
+```
+This launches the container. To ensure it is running, just type in the terminal
+```
+docker container list
+```
+This lists all containers, including the one you just launched (normally!)
+### Check the database, the table, and the entries
+Once the container is running, it is open on a given port (depeding on the SQL editor) which has been "mapped" ("port-forwarded") on a port on the local machine. This is done in the `docker-compose.yml`.  
+The container being running, we can "enter" it and access to the database. To do so, just type in the terminal
+```
+docker exec -it eng-db-1 mysql -p
+```
+Pay attention to two elements:
+- `eng-db-1`: this is the `NAME` of the container, it might be different; run `docker compose list` to know it (it is the latest field on the right)
+- `mysql`: this is the SQL editor, so be sure to replace this by the one you used.  
+
+Once entered, the prompt asks for a password; this is the "root" account password, set in the `.env` file as `DB_ROOT_PWD`. Enter it.  
+Once in the client, you can see all databases by typing the following
+```
+show databases;
+```
+If everything goes right, you should see the database you crated (following the value of `DB_NAME` in the `.env` file).  
+You can then enter this database to see which tables it contains. You can do so by typing the following
+```
+use dbname;
+show tables;
+```
+Here, pay again attention to `dbname`: you have to replace it by the `DB_NAME` you previously set in the `.env` file.  
+Normally, the `show`command should show you the (single) table you created in this database, and that is named `country` (as set in the `1-ddl.sql` script).  
+Now, we want to see if the entries were correctly assigned, i.e., if the `2-dml.sql` script has been executed properly. To do so, simply enter
+```
+select * from country;
+```
+And now, the entries done in the script should appear!
+### Check the backstages
+Finally, we can check what we should always look at after any execution, before even trying to access what we created: the logs!  
+To do so, simply type
+```
+docker compose logs db
+```
+And then you can see everything that happened in background when launching the container.  
+Scroll up a bit, and you may quickly find :
+- lines indicating the creation of the table, of users and of passwords
+- just below, two lines indicating that the two scripts `1-ddl.sql` and `2-dml.sql` have been executed.  
+
+With these logs, you should normally already know whereas the container executed well or not. But it's always clearer to explore the object itself a little bit!
