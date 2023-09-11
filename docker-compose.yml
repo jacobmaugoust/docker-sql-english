@@ -1,0 +1,14 @@
+version: '3.1'
+services:
+  db:
+    image: ${EDITOR:-mariadb}:${VERSION:-latest}
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-dbcountry}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PWD:-azerty123!!}
+      MYSQL_USER: ${DB_EXTRA_USER:-country}
+      MYSQL_PASSWORD: ${DB_EXTRA_USER_PWD:-azerty1234!!}
+    volumes:
+    - ${SCRIPT_PATH:-./scripts}:/docker-entrypoint-initdb.d
+    ports:
+    - ${MAPPING_PORT:-3306}:3306

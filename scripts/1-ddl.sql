@@ -1,0 +1,2 @@
+-- USE dbcountry;
+CREATE TABLE country (ID INT PRIMARY KEY NOT NULL AUTO_INCREMENT, Country VARCHAR(255), CountryCode VARCHAR(2), LangCode VARCHAR(2));
